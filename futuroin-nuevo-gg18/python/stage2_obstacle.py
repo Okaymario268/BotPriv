@@ -66,7 +66,7 @@ def parallel_park(direction):
 # main.py imports parallel_park for its in-UI launcher, __name__ != "__main__",
 # so nothing below runs (no double camera / double App.run()).
 if __name__ == "__main__":
-    USE_START_BUTTON = True   # True = wait for the physical START button + 3-2-1 countdown
+    USE_START_BUTTON = True   # True = wait for the physical START button (instant start; 3-2-1 only if USE_COUNTDOWN=1)
                               # (WRO rule 9.6). False = auto-start after START_DELAY_S.
     START_DELAY_S = 2.0       # used only when USE_START_BUTTON is False
 
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     def _begin():
         io.set_start_button(USE_START_BUTTON)     # sync the toggle to the MCU + arm the gate
         if USE_START_BUTTON:
-            print("[obstacle] armed — press the START button (3-2-1 on the LED matrix)...", flush=True)
+            print("[obstacle] armed — press the START button (run starts instantly)...", flush=True)
             while not io.start_ready():
                 time.sleep(0.05)
         else:

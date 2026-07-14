@@ -134,10 +134,13 @@
 #define SIDE_CLEAR_MM      2500  // readings at/over this = open corridor (-1)
 #define SIDE_TIMEOUT_US    30000 // no echo edge this long after a trigger -> -1
 
-#define USE_START_BUTTON  1      // 1 = arm the button+countdown gate at boot;
+#define USE_START_BUTTON  1      // 1 = arm the button gate at boot;
                                  // 0 = no gate, runs start immediately (old behaviour).
                                  // Also switchable at runtime via set_start_button().
-#define COUNTDOWN_MS      1000   // ms shown per number (3, 2, 1)
+#define USE_COUNTDOWN     0      // 0 = the run starts the INSTANT the button is
+                                 // pressed (no 3-2-1); 1 = play the LED-matrix
+                                 // 3-2-1 countdown after the press (old behaviour)
+#define COUNTDOWN_MS      1000   // ms shown per number (3, 2, 1) — USE_COUNTDOWN=1 only
 
 // ---------------------------------------------------------------------------
 // Steering geometry (measured on YOUR car)
@@ -678,10 +681,17 @@ void serviceStart() {
     if (digitalRead(START_BTN_PIN) == LOW) {           // active-low, debounced
       if (btnLowSince == 0) btnLowSince = millis();
       else if (millis() - btnLowSince > 30) {
+#if USE_COUNTDOWN
         startState = SP_COUNT;
         startT0    = millis();
         shownDigit = -1;
         Monitor.println("start button pressed -> 3..2..1");
+#else
+        // instant start: skip SP_COUNT entirely -- the press IS the go signal
+        clearMatrix();
+        startState = SP_FIRED;
+        Monitor.println("start button pressed -> GO (countdown disabled)");
+#endif
       }
     } else {
       btnLowSince = 0;

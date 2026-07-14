@@ -96,6 +96,21 @@ works around a true-straight center. Manual `set_angle()` stays untrimmed (raw
 bench control). Tune on the mat: still drifts right → more negative; drifts
 left → back toward 0.
 
+## 5. Instant start — button press starts the run, no countdown
+
+The START button used to play a 3-2-1 LED-matrix countdown (~3 s) before
+releasing the run. New firmware switch:
+
+    #define USE_COUNTDOWN  0   // 0 = GO the instant the button is pressed
+                               // 1 = old 3-2-1 countdown behaviour
+
+With `USE_COUNTDOWN 0` (the new default) the debounced press jumps the start
+gate straight to FIRED: the console logs
+`start button pressed -> GO (countdown disabled)` and the Python side's
+`start_ready()` poll releases immediately. Nothing else changes — the button
+gate itself (`USE_START_BUTTON`), `arm_start`, `set_start_button` and
+`start_ready` all behave exactly as before, just without the 3-second wait.
+
 ## Files touched
 
 | File | Change |
